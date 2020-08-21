@@ -1,44 +1,45 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-unit-jest" target="_blank" rel="noopener">unit-jest</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div v-if="error">{{error}}</div>
+    <!-- async로 호출되는 setup()을 쓰는 자녀 객체는 다음과 같이 suspense를 걸어준다. -->
+    <Suspense v-else>
+      <!-- 
+        - suspense가 사용될 때는 응답이 오는 동안 로딩상태를 표시할 수 있다.
+        - #default template에 응답 후에 보여질 컴포넌트를 넣고, 
+        - #fallback template에 로딩시 보여질 상태를 넣는다. 
+      -->
+      <template #default>
+        <users />
+      </template>
+      <template #fallback>
+        <div>Loading your amazing vuesers...</div>
+      </template>
+    </Suspense>
   </div>
 </template>
 
 <script>
+import Users from "./sample02/Users.vue";
+import { onErrorCaptured, ref } from "vue";
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "HelloWorld",
+  setup() {
+    const error = ref(null);
+
+    onErrorCaptured((e) => {
+      error.value = e;
+    });
+
+    return {
+      error,
+    };
+  },
+
+  components: {
+    Users,
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
